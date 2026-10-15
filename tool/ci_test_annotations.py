@@ -1,8 +1,10 @@
-"""A bukott Flutter-tesztek GitHub-annotációként (CI).
+"""Failed Flutter tests as GitHub annotations (CI).
 
-A `flutter test --file-reporter json:...` kimenetéből minden hibás teszthez
-egy `::error` sort ír: így a hiba oka a GitHub API-n keresztül, a teljes
-napló letöltése nélkül is olvasható (a napló csak bejelentkezve érhető el).
+Reads the output of `flutter test --file-reporter json:...` and writes one
+`::error` line per failed test, so the cause can be read through the GitHub API
+without downloading the full log (the log is only available when signed in).
+Widget tests report "Test failed. See exception logs above."; in that case the
+printed exception log (Expected / Actual / Which) is used instead.
 """
 import json
 import sys
@@ -22,6 +24,7 @@ def main(path: str) -> None:
     names: dict[int, str] = {}
     urls: dict[int, str] = {}
     errors: dict[int, list[str]] = {}
+    prints: dict[int, list[str]] = {}
     failed: list[int] = []
     with open(path, encoding='utf-8') as f:
         for line in f:
@@ -39,15 +42,22 @@ def main(path: str) -> None:
                 url = test.get('root_url') or test.get('url') or ''
                 line_no = test.get('root_line') or test.get('line')
                 urls[test['id']] = f"{url.rsplit('/', 1)[-1]}:{line_no}" if url else ''
+            elif kind == 'print' and 'testID' in event:
+                prints.setdefault(event['testID'], []).append(event.get('message', ''))
             elif kind == 'error':
                 errors.setdefault(event['testID'], []).append(event.get('error', ''))
             elif kind == 'testDone' and event.get('result') != 'success' and not event.get('hidden'):
                 failed.append(event['testID'])
     for test_id in failed:
-        message = '\n'.join(errors.get(test_id, []))[:MAX_MESSAGE]
+        error = '\n'.join(errors.get(test_id, []))
+        log = '\n'.join(prints.get(test_id, []))
+        start = log.find('EXCEPTION CAUGHT')
+        if start >= 0:
+            error = log[start:] + '\n' + error
+        message = error[:MAX_MESSAGE]
         title = f"{names.get(test_id, '?')} ({urls.get(test_id, '')})"
         print(f'::error title={escape_property(title)}::{escape(message)}')
-    print(f'{len(failed)} hibás teszt.')
+    print(f'{len(failed)} failed test(s).')
 
 
 if __name__ == '__main__':

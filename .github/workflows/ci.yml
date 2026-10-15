@@ -21,10 +21,13 @@ concurrency:
 env:
   FLUTTER_VERSION: '3.47.6'
 
+# The runner image is pinned (ubuntu-24.04): the Android NDK version in
+# android/app/build.gradle.kts must be pre-installed on it (ADR-005).
+
 jobs:
   test:
     name: Analyze and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -56,7 +59,7 @@ jobs:
   apk:
     name: Build APK
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version_name: ${{ steps.version.outputs.name }}
       version_display: ${{ steps.version.outputs.display }}
@@ -138,7 +141,7 @@ jobs:
     name: Publish
     needs: [test, apk]
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       GH_TOKEN: ${{ github.token }}
       VERSION_NAME: ${{ needs.apk.outputs.version_name }}
