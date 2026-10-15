@@ -7,6 +7,7 @@ import '../models/list_item.dart';
 import '../models/shopping_list.dart';
 import '../util/format.dart';
 import '../util/uuid.dart';
+import 'catalog_store.dart';
 
 /// What happened when an item was added (FR-05).
 enum AddOutcome {
@@ -34,12 +35,17 @@ typedef Progress = ({int checked, int total});
 class ListStore extends ChangeNotifier {
   ListStore(
     this._repository, {
+    CatalogStore? catalog,
     DateTime Function()? clock,
     String Function()? newId,
-  })  : _clock = clock ?? DateTime.now,
+  })  : _catalog = catalog,
+        _clock = clock ?? DateTime.now,
         _newId = newId ?? generateUuidV4;
 
   final ListRepository _repository;
+
+  /// FR-13: names put on a list are learned by the catalog.
+  final CatalogStore? _catalog;
   final DateTime Function() _clock;
   final String Function() _newId;
 
@@ -161,7 +167,18 @@ class ListStore extends ChangeNotifier {
     _items.putIfAbsent(listId, () => []).add(item);
     await _touch(listId, now);
     notifyListeners();
+    await _catalog?.learn(clean);
     return AddResult(AddOutcome.added, item);
+  }
+
+  /// FR-12: adds several names (e.g. from the catalog). Returns how many were added.
+  Future<int> addItems(String listId, Iterable<String> names) async {
+    var added = 0;
+    for (final name in names.toList()) {
+      final r = await addItem(listId, name);
+      if (r.outcome == AddOutcome.added) added++;
+    }
+    return added;
   }
 
   /// Edits name and note. Returns false (and changes nothing) if another item
@@ -173,6 +190,7 @@ class ListStore extends ChangeNotifier {
     final newNote = cleanNote(note);
     if (clean == item.name && newNote == item.note) return true;
     await _saveItem(item.copyWith(name: clean, note: newNote, updatedAt: _now()));
+    if (clean != item.name) await _catalog?.learn(clean);
     return true;
   }
 

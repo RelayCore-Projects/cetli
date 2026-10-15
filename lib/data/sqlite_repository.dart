@@ -1,13 +1,17 @@
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 
+import '../models/catalog_item.dart';
 import '../models/list_item.dart';
 import '../models/shopping_list.dart';
+import 'catalog_repository.dart';
 import 'list_repository.dart';
 import 'settings_repository.dart';
 
-/// SQLite storage on the phone (NFR-02, NFR-05, ADR-001): lists, items and settings.
-class SqliteRepository implements ListRepository, SettingsRepository {
+/// SQLite storage on the phone (NFR-02, NFR-05, ADR-001): lists, items, settings
+/// and the user's own catalog entries.
+class SqliteRepository
+    implements ListRepository, SettingsRepository, CatalogRepository {
   SqliteRepository._(this._db);
 
   final Database _db;
@@ -15,11 +19,13 @@ class SqliteRepository implements ListRepository, SettingsRepository {
   static const _lists = 'lists';
   static const _items = 'list_items';
   static const _settings = 'settings';
+  static const _catalog = 'catalog_items';
 
   /// Schema version. Increase it on every change and convert in [_migrate];
   /// every migration gets an automated test (NFR-05).
   ///  1 – v0.2.0: lists, items, settings
-  static const schemaVersion = 1;
+  ///  2 – v0.3.0: catalog_items (the user's own catalog entries)
+  static const schemaVersion = 2;
 
   /// [path] is only needed in tests; by default the app's own database folder.
   static Future<SqliteRepository> open({String? path}) async {
@@ -29,7 +35,10 @@ class SqliteRepository implements ListRepository, SettingsRepository {
       version: schemaVersion,
       onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
       // onCreate and onUpgrade run in a transaction: on error everything is rolled back.
-      onCreate: (db, version) => _createSchemaV1(db),
+      onCreate: (db, version) async {
+        await _createSchemaV1(db);
+        await _createCatalog(db);
+      },
       onUpgrade: _migrate,
     );
     return SqliteRepository._(db);
@@ -73,8 +82,27 @@ class SqliteRepository implements ListRepository, SettingsRepository {
     ''');
   }
 
+  /// v2: the user's own catalog entries (FR-10, FR-13). Built-in entries are not stored.
+  static Future<void> _createCatalog(DatabaseExecutor db) async {
+    await db.execute('''
+      CREATE TABLE $_catalog (
+        id          TEXT PRIMARY KEY,
+        name        TEXT NOT NULL,
+        name_key    TEXT NOT NULL,
+        created_at  TEXT NOT NULL,
+        updated_at  TEXT NOT NULL,
+        deleted_at  TEXT
+      )
+    ''');
+    await db.execute('CREATE UNIQUE INDEX idx_catalog_name ON $_catalog '
+        '(name_key) WHERE deleted_at IS NULL');
+  }
+
   static Future<void> _migrate(Database db, int from, int to) async {
-    // No migrations yet: schema version 1 is the first released schema.
+    if (from < 2) {
+      // v1 → v2: new table, lists and items unchanged
+      await _createCatalog(db);
+    }
   }
 
   // ----- lists and items -----
@@ -126,6 +154,25 @@ class SqliteRepository implements ListRepository, SettingsRepository {
       }
       await batch.commit(noResult: true);
     });
+  }
+
+  // ----- catalog -----
+
+  @override
+  Future<List<CatalogItem>> loadCatalog() async {
+    final rows = await _db.query(_catalog, where: 'deleted_at IS NULL');
+    return rows.map(CatalogItem.fromMap).toList();
+  }
+
+  @override
+  Future<void> insertCatalogItem(CatalogItem item) async {
+    await _db.insert(_catalog, item.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.abort);
+  }
+
+  @override
+  Future<void> updateCatalogItem(CatalogItem item) async {
+    await _db.update(_catalog, item.toMap(), where: 'id = ?', whereArgs: [item.id]);
   }
 
   // ----- settings -----

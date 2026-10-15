@@ -8,11 +8,18 @@ Future<String?> showNameDialog(
   required String title,
   required String initial,
   required String confirmLabel,
+  String label = 'Name',
+  int maxLength = TextRules.listNameMaxLength,
 }) =>
     showDialog<String>(
       context: context,
-      builder: (_) =>
-          _NameDialog(title: title, initial: initial, confirmLabel: confirmLabel),
+      builder: (_) => _NameDialog(
+        title: title,
+        initial: initial,
+        confirmLabel: confirmLabel,
+        label: label,
+        maxLength: maxLength,
+      ),
     );
 
 class _NameDialog extends StatefulWidget {
@@ -20,11 +27,15 @@ class _NameDialog extends StatefulWidget {
     required this.title,
     required this.initial,
     required this.confirmLabel,
+    required this.label,
+    required this.maxLength,
   });
 
   final String title;
   final String initial;
   final String confirmLabel;
+  final String label;
+  final int maxLength;
 
   @override
   State<_NameDialog> createState() => _NameDialogState();
@@ -42,7 +53,7 @@ class _NameDialogState extends State<_NameDialog> {
   }
 
   void _submit() {
-    final name = cleanName(_controller.text, TextRules.listNameMaxLength);
+    final name = cleanName(_controller.text, widget.maxLength);
     if (name == null) {
       setState(() => _error = 'Enter a name');
       return;
@@ -58,10 +69,10 @@ class _NameDialogState extends State<_NameDialog> {
         key: const Key('name-field'),
         controller: _controller,
         autofocus: true,
-        maxLength: TextRules.listNameMaxLength,
+        maxLength: widget.maxLength,
         textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
-          labelText: 'Name',
+          labelText: widget.label,
           errorText: _error,
           counterText: '',
         ),

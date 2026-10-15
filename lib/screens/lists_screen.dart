@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/shopping_list.dart';
 import '../state/store_scope.dart';
 import '../widgets/dialogs.dart';
+import 'catalog_screen.dart';
 import 'list_screen.dart';
 import 'settings_screen.dart';
 
@@ -151,14 +152,12 @@ class _ListsScreenState extends State<ListsScreen> {
         actions: [
           PopupMenuButton<String>(
             key: const Key('home-menu'),
-            onSelected: (value) {
-              if (value == 'settings') {
-                Navigator.of(context).push(MaterialPageRoute<void>(
-                  builder: (_) => const SettingsScreen(),
-                ));
-              }
-            },
+            onSelected: (value) => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) =>
+                  value == 'catalog' ? const CatalogScreen() : const SettingsScreen(),
+            )),
             itemBuilder: (_) => const [
+              PopupMenuItem(value: 'catalog', child: Text('Catalog')),
               PopupMenuItem(value: 'settings', child: Text('Settings')),
             ],
           ),
