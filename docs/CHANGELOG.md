@@ -10,6 +10,10 @@ Kategóriák: **Hozzáadva** · **Módosítva** · **Javítva** · **Eltávolít
 
 ## [Unreleased]
 
+## [0.2.0] – 2026-10-16 – Listák, szerkesztő és vásárló mód
+
+Az első telepíthető verzió.
+
 ### Hozzáadva
 - Listák: létrehozás (dátumos alapnévvel), átnevezés, törlés; a főképernyőn a legutóbb módosított van felül, mellette a kipipált / összes tétel
 - Kijelölés hosszú nyomással: több lista törlése egyszerre, átnevezés a kijelölésből

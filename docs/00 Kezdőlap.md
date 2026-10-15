@@ -1,7 +1,7 @@
 ---
 tipus: kezdolap
 projekt: Cetli
-aktualis_verzio: 0.2.0 (fejlesztés alatt)
+aktualis_verzio: 0.2.0
 fazis: Fejlesztés
 frissitve: 2026-10-16
 ---
@@ -14,9 +14,9 @@ Egyszerű, offline bevásárlólista Androidra, fájlos megosztással és össze
 
 | | |
 |---|---|
-| Aktuális verzió | **0.1.0 – koncepció** · fejlesztés alatt: 0.2.0 |
+| Aktuális verzió | **0.2.0 – listák, szerkesztő és vásárló mód** |
 | Fázis | Koncepció ✅ → *Fejlesztés* → Tesztelés → Hibajavítás → Kiadás |
-| Következő lépés | **0.2.0** Preview kipróbálása telefonon: listák, szerkesztő és vásárló mód ([[02 Ütemterv]], [[05 Tesztelés]]) |
+| Következő lépés | **0.3.0**: katalógus, automatikus kiegészítés, választás a katalógusból ([[02 Ütemterv]]) |
 
 ## Dokumentumok
 

@@ -66,6 +66,14 @@ Verziónként: dátum, Preview / kiadás, eszközök, eredmény. Visszajelzésn�
 | Nézet | Észrevétel | Megoldás |
 |---|---|---|
 
+### v0.2.0 – Preview kézi tesztje (2026-10-16)
+
+Saját telefonon: listák létrehozása, gyors bevitel, vásárló mód, rendezés, beállítások, új ikon – rendben.
+
+| Nézet | Észrevétel | Megoldás |
+|---|---|---|
+| Főképernyő | Több listát is lehessen egyszerre törölni; hosszú nyomásra jöjjön szerkesztési lehetőség | Új FR-20: kijelölés hosszú nyomással, *Rename* (egy listánál), *Delete* (többnél is), *Select all* |
+
 ### v0.2.0 – első CI-kör (2026-10-16)
 
 Elemzés és APK-fordítás hibátlan, 45 / 46 automatikus teszt sikeres.
