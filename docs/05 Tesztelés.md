@@ -1,6 +1,6 @@
 ---
 tipus: teszteles
-frissitve: 2026-10-15
+frissitve: 2026-10-16
 ---
 
 # Tesztelés
@@ -35,7 +35,7 @@ Ha egy automatikus teszt elbukik, a GitHubon piros ❌ jelenik meg, és nem adun
 | T-02 | `+` → név elfogadása | A lista dátumos névvel létrejön, szerkesztő módban nyílik | FR-02 |
 | T-03 | Szerkesztő módban 5 tétel gépelése, mindegyik után Enter | Mind bekerül, a billentyűzet végig nyitva marad | FR-03, NFR-04 |
 | T-04 | `bread` beírása, amikor `Bread` már a listán van | Nincs új tétel, „Already on the list” | FR-05 |
-| T-05 | Kipipált `Milk` mellett `milk` beírása | A `Milk` pipája lekerül, nincs új tétel | FR-05 |
+| T-05 | Kipipált `Milk` mellett `milk` beírása | A `Milk` pipája lekerül, nincs új tétel; az üzenet a beviteli mező alatt jelenik meg, nem takarja el | FR-05 |
 | T-06 | Tételre koppintás szerkesztő módban → megjegyzés: `whole grain` | A név alatt szürkén megjelenik | FR-06 |
 | T-07 | Tétel törlése → *Undo* | A tétel visszakerül | FR-03 |
 | T-08 | *Done* → vásárló mód, koppintás egy tételre | Halványabb, áthúzott, olvasható; az állapot nő; újabb koppintás visszavonja | FR-04 |
@@ -64,3 +64,13 @@ Verziónként: dátum, Preview / kiadás, eszközök, eredmény. Visszajelzésn�
 
 | Nézet | Észrevétel | Megoldás |
 |---|---|---|
+
+### v0.2.0 – első CI-kör (2026-10-16)
+
+Elemzés és APK-fordítás hibátlan, 45 / 46 automatikus teszt sikeres.
+
+| Nézet | Észrevétel | Megoldás |
+|---|---|---|
+| Szerkesztő mód | Duplikátumnál a felugró üzenet (SnackBar) eltakarta a beviteli mezőt és a + gombot; a widgetteszt ezt megfogta | Az üzenet a beviteli mező alá került, gépeléskor eltűnik |
+| CI | A bukott widgetteszt oka nem látszott az annotációban | A `tool/ci_test_annotations.py` a kiírt kivételnaplót is csatolja |
+| CI | Az `ubuntu-latest` október 19-től Ubuntu 26-ra vált – a rögzített NDK eltűnhet | A futtatókörnyezet rögzítve: `ubuntu-24.04` |

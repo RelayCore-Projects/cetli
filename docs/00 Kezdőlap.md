@@ -33,6 +33,7 @@ Egyszerű, offline bevásárlólista Androidra, fájlos megosztással és össze
    - [[ADR-003 Repó- és vault-szerkezet]]
    - [[ADR-004 Megosztás fájllal, szerver nélkül]]
    - [[ADR-005 Fordítás, aláírás és kiadás a GitHub Actionsben]]
+   - [[ADR-006 Alkalmazásikon]]
 
 ## Privát jegyzetek
 

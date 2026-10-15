@@ -18,7 +18,7 @@ Kategóriák: **Hozzáadva** · **Módosítva** · **Javítva** · **Eltávolít
 - Rendezés listánként: beírás sorrendje, név A–Z, név Z–A
 - Vásárlás után: *Uncheck all*, *Remove checked items*
 - Beállítások: a kipipált tételek alulra kerülnek vagy a helyükön maradnak; névjegy
-- Saját alkalmazásikon
+- Saját alkalmazásikon: sötétzöld C három sorral, citromsárga háttéren ([[ADR-006 Alkalmazásikon]])
 - CI: elemzés, automatikus tesztek, aláírt APK, Preview és végleges kiadás ([[ADR-005 Fordítás, aláírás és kiadás a GitHub Actionsben]])
 
 ## [0.1.0] – 2026-10-15 – Koncepció
