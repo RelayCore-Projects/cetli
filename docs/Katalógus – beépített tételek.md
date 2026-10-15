@@ -1,7 +1,7 @@
 ---
 tipus: katalogus
 verzio: 0.3.0
-statusz: átnézésre vár
+statusz: jóváhagyva
 frissitve: 2026-10-16
 ---
 
@@ -9,12 +9,13 @@ frissitve: 2026-10-16
 
 A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei (brit angol, mert a felület `en_GB`). Az appban **nincsenek kategóriák** (K-07: A–Z + keresés); a csoportosítás itt csak az átnézést segíti.
 
-**Átnézés:** amit nem kérsz, azt húzd át (`~~Tétel~~`), ami hiányzik, azt írd a csoport végére új sorba. A végleges listából készül az app fájlja (`assets/catalog/builtin_items.txt`). Később innen semmit nem törlünk, csak áthúzunk.
+**Átnézés (kész, 2026-10-16):** a zsemle *Bread rolls* néven szerepel, mellé került a kifli (*Crescent rolls*). Későbbi módosításnál: amit nem kérsz, azt húzd át (`~~Tétel~~`), ami hiányzik, azt írd a csoport végére új sorba. A végleges listából készül az app fájlja (`assets/catalog/builtin_items.txt`). Később innen semmit nem törlünk, csak áthúzunk.
 
 ## Pékáru
 - Bread
 - Wholemeal bread
-- Rolls
+- Bread rolls
+- Crescent rolls
 - Baguette
 - Croissants
 - Toast bread
