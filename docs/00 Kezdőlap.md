@@ -1,9 +1,9 @@
 ---
 tipus: kezdolap
 projekt: Cetli
-aktualis_verzio: 0.1.0
-fazis: Koncepció
-frissitve: 2026-10-15
+aktualis_verzio: 0.2.0 (fejlesztés alatt)
+fazis: Fejlesztés
+frissitve: 2026-10-16
 ---
 
 # Cetli – projekt kezdőlap
@@ -14,9 +14,9 @@ Egyszerű, offline bevásárlólista Androidra, fájlos megosztással és össze
 
 | | |
 |---|---|
-| Aktuális verzió | **0.1.0 – koncepció** |
-| Fázis | *Koncepció* → Fejlesztés → Tesztelés → Hibajavítás → Kiadás |
-| Következő lépés | A koncepció átnézése és jóváhagyása, utána **0.2.0**: projektváz, CI, aláírt APK, listák két móddal ([[02 Ütemterv]]) |
+| Aktuális verzió | **0.1.0 – koncepció** · fejlesztés alatt: 0.2.0 |
+| Fázis | Koncepció ✅ → *Fejlesztés* → Tesztelés → Hibajavítás → Kiadás |
+| Következő lépés | **0.2.0** Preview kipróbálása telefonon: listák, szerkesztő és vásárló mód ([[02 Ütemterv]], [[05 Tesztelés]]) |
 
 ## Dokumentumok
 
@@ -32,6 +32,7 @@ Egyszerű, offline bevásárlólista Androidra, fájlos megosztással és össze
    - [[ADR-002 Nyilvános repó, licenc és nyelvek]]
    - [[ADR-003 Repó- és vault-szerkezet]]
    - [[ADR-004 Megosztás fájllal, szerver nélkül]]
+   - [[ADR-005 Fordítás, aláírás és kiadás a GitHub Actionsben]]
 
 ## Privát jegyzetek
 
