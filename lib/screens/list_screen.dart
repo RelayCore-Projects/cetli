@@ -31,6 +31,9 @@ class _ListScreenState extends State<ListScreen> {
   /// The item that was re-entered (FR-05) – highlighted until the next action.
   String? _highlightId;
 
+  /// Feedback under the input field (FR-05). A snack bar would cover the field.
+  String? _inputMessage;
+
   @override
   void dispose() {
     _input.dispose();
@@ -45,6 +48,7 @@ class _ListScreenState extends State<ListScreen> {
     setState(() {
       _editing = editing;
       _highlightId = null;
+      _inputMessage = null;
     });
     if (!editing) {
       _input.clear();
@@ -68,14 +72,21 @@ class _ListScreenState extends State<ListScreen> {
     _input.clear();
     switch (result.outcome) {
       case AddOutcome.added:
-        setState(() => _highlightId = null);
+        setState(() {
+          _highlightId = null;
+          _inputMessage = null;
+        });
         _scrollToEndIfAddedOrder();
       case AddOutcome.alreadyOnList:
-        setState(() => _highlightId = result.item.id);
-        _showMessage('"${result.item.name}" is already on the list');
+        setState(() {
+          _highlightId = result.item.id;
+          _inputMessage = '"${result.item.name}" is already on the list';
+        });
       case AddOutcome.unchecked:
-        setState(() => _highlightId = result.item.id);
-        _showMessage('"${result.item.name}" is back on the list');
+        setState(() {
+          _highlightId = result.item.id;
+          _inputMessage = '"${result.item.name}" is back on the list';
+        });
     }
   }
 
@@ -291,11 +302,15 @@ class _ListScreenState extends State<ListScreen> {
                       maxLength: TextRules.itemNameMaxLength,
                       textCapitalization: TextCapitalization.sentences,
                       textInputAction: TextInputAction.done,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Add item',
                         counterText: '',
                         border: InputBorder.none,
+                        helperText: _inputMessage,
                       ),
+                      onChanged: (_) {
+                        if (_inputMessage != null) setState(() => _inputMessage = null);
+                      },
                       // Handling onEditingComplete ourselves keeps the keyboard open (NFR-04)
                       onEditingComplete: _submit,
                     ),

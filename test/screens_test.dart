@@ -113,13 +113,22 @@ void main() {
     expect(find.text('Bread'), findsOneWidget);
     expect(_inputFocused(tester), isTrue);
 
+    // re-entering a checked item unchecks it
+    await store.toggleChecked(store.itemsOf(list.id).last.id);
+    await tester.pumpAndSettle();
+    await _type(tester, 'BREAD');
+    expect(find.text('"Bread" is back on the list'), findsOneWidget);
+    expect(store.progressOf(list.id).checked, 0);
+
     await _type(tester, ' milk ');
     expect(find.text('"Milk" is already on the list'), findsOneWidget);
     expect(store.itemsOf(list.id).map((i) => i.name), ['Milk', 'Bread']);
     expect(_inputFocused(tester), isTrue);
 
-    // the add button works too
+    // the message disappears when typing; the add button works too
     await tester.enterText(find.byKey(const Key('add-item-field')), 'Apples');
+    await tester.pump();
+    expect(find.text('"Milk" is already on the list'), findsNothing);
     await tester.tap(find.byKey(const Key('add-item')));
     await tester.pumpAndSettle();
     expect(store.itemsOf(list.id), hasLength(3));
