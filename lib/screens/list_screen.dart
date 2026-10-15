@@ -4,10 +4,12 @@ import '../domain/sorting.dart';
 import '../domain/text_rules.dart';
 import '../models/list_item.dart';
 import '../models/shopping_list.dart';
+import '../state/catalog_scope.dart';
 import '../state/list_store.dart';
 import '../state/settings_scope.dart';
 import '../state/store_scope.dart';
 import '../widgets/dialogs.dart';
+import 'catalog_picker_screen.dart';
 
 /// One list in two modes: shopping (FR-04) and edit (FR-03).
 class ListScreen extends StatefulWidget {
@@ -63,8 +65,11 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   /// FR-03: Enter adds the item and keeps the keyboard open for the next one.
-  Future<void> _submit() async {
-    final name = cleanName(_input.text, TextRules.itemNameMaxLength);
+  Future<void> _submit() => _addName(_input.text);
+
+  /// Adds a typed name or a tapped suggestion (FR-03, FR-05, FR-11).
+  Future<void> _addName(String raw) async {
+    final name = cleanName(raw, TextRules.itemNameMaxLength);
     _inputFocus.requestFocus();
     if (name == null) return;
     final result = await _store.addItem(widget.listId, name);
@@ -88,6 +93,22 @@ class _ListScreenState extends State<ListScreen> {
           _inputMessage = '"${result.item.name}" is back on the list';
         });
     }
+  }
+
+  /// FR-12: several items from the catalog.
+  Future<void> _pickFromCatalog() async {
+    final store = _store;
+    final names = await Navigator.of(context).push<List<String>>(
+      MaterialPageRoute(builder: (_) => CatalogPickerScreen(listId: widget.listId)),
+    );
+    if (names == null || names.isEmpty) return;
+    final added = await store.addItems(widget.listId, names);
+    if (!mounted) return;
+    setState(() {
+      _highlightId = null;
+      _inputMessage = added == 1 ? '1 item added' : '$added items added';
+    });
+    _scrollToEndIfAddedOrder();
   }
 
   void _scrollToEndIfAddedOrder() {
@@ -285,6 +306,7 @@ class _ListScreenState extends State<ListScreen> {
                   itemBuilder: (_, i) => _itemTile(items[i], theme),
                 ),
         ),
+        _suggestions(items, theme),
         Material(
           color: theme.colorScheme.surfaceContainer,
           child: SafeArea(
@@ -321,12 +343,52 @@ class _ListScreenState extends State<ListScreen> {
                     icon: const Icon(Icons.add),
                     onPressed: _submit,
                   ),
+                  IconButton(
+                    key: const Key('from-catalog'),
+                    tooltip: 'From catalog',
+                    icon: const Icon(Icons.playlist_add),
+                    onPressed: _pickFromCatalog,
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  /// FR-11: catalog suggestions for the text being typed; tap to add.
+  Widget _suggestions(List<ListItem> items, ThemeData theme) {
+    final onList = {for (final i in items) i.nameKey};
+    return ListenableBuilder(
+      listenable: _input,
+      builder: (context, _) {
+        final suggestions =
+            CatalogScope.of(context).suggestions(_input.text, exclude: onList);
+        if (suggestions.isEmpty) return const SizedBox.shrink();
+        return Material(
+          color: theme.colorScheme.surfaceContainer,
+          child: SingleChildScrollView(
+            key: const Key('suggestions'),
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+            child: Row(
+              children: [
+                for (final s in suggestions)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ActionChip(
+                      key: Key('suggestion-${s.nameKey}'),
+                      label: Text(s.name),
+                      onPressed: () => _addName(s.name),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
