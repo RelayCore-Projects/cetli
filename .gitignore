@@ -1,0 +1,61 @@
+# ---------- Privacy: real shopping data never goes into the repo ----------
+*.cetli
+!test/fixtures/**/*.cetli
+cetli-backup*
+cetli-export*
+exports/
+backups/
+
+# Personal notes (local only)
+docs/_privat/
+
+# ---------- Signing keys and secrets ----------
+*.jks
+*.keystore
+key.properties
+android/key.properties
+*.p12
+*.pem
+.env
+.env.*
+
+# ---------- Obsidian (personal, frequently changing state) ----------
+/.obsidian/
+docs/.obsidian/workspace.json
+docs/.obsidian/workspace-mobile.json
+docs/.obsidian/cache
+docs/.trash/
+
+# ---------- Flutter / Dart ----------
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+*.g.dart.tmp
+pubspec_overrides.yaml
+
+# ---------- Android ----------
+android/.gradle/
+android/captures/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+*.apk
+*.aab
+
+# ---------- IDE / OS ----------
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini

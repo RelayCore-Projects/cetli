@@ -1,0 +1,15 @@
+# Egységes sorvégek: a repóban LF, a Windows-os parancsfájlok CRLF
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Bináris fájlok
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.pdf binary
+*.jar binary
