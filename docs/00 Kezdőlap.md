@@ -34,6 +34,8 @@ Egyszerű, offline bevásárlólista Androidra, fájlos megosztással és össze
    - [[ADR-004 Megosztás fájllal, szerver nélkül]]
    - [[ADR-005 Fordítás, aláírás és kiadás a GitHub Actionsben]]
    - [[ADR-006 Alkalmazásikon]]
+   - [[ADR-007 Beépített katalógus az app részeként]]
+9. [[Katalógus – beépített tételek]] – az app beépített terméklistája
 
 ## Privát jegyzetek
 

@@ -1,6 +1,6 @@
 ---
 tipus: specifikacio
-dokumentum_verzio: 0.2.0
+dokumentum_verzio: 0.3.0
 statusz: fejlesztés
 frissitve: 2026-10-16
 ---
@@ -14,6 +14,7 @@ frissitve: 2026-10-16
 | 0.1.0 | 2026-10-15 | Első változat (koncepció); a K-01…K-07 kérdések lezárva | Kiinduló igények, lásd [[#1. Cél]] és [[#9. Nyitott kérdések]] |
 | 0.2.0 | 2026-10-16 | FR-05: a duplikátum üzenete a beviteli mező alatt jelenik meg | A 0.2.0 első CI-köre: a felugró üzenet eltakarta a beviteli mezőt |
 | 0.2.0 | 2026-10-16 | **Új: FR-20** – listák kijelölése hosszú nyomással, több lista törlése egyszerre, átnevezés a kijelölésből | Igény a 0.2.0 Preview kipróbálása után: több lista egyszerre törölhető legyen |
+| 0.3.0 | 2026-10-16 | FR-10: a **beépített tételek csak olvashatók**, csak a saját tételek szerkeszthetők és törölhetők; FR-17 és az adatmodell ehhez igazítva; a beépített lista átnézve (163 tétel, [[Katalógus – beépített tételek]]) | Igény a katalógus átnézésekor; [[ADR-007 Beépített katalógus az app részeként]] |
 
 > [!info] Hogyan jelöljük a változásokat ebben a dokumentumban
 > - Minden módosítás új sort kap a fenti táblázatban (verzió, dátum, mi, miért).
@@ -124,7 +125,8 @@ Az app **offline** működik: nincs fiók, szerver és internet-engedély.
 #### FR-10 Katalógus kezelése
 - Külön menüpont (*Catalog*). Kb. **150 beépített angol** tétel (pl. Bread, Milk, Sour cream, Banana) és a **saját** tételek.
 - Ábécérendben, keresőmezővel (K-07).
-- Saját tétel felvétele, bármely tétel átnevezése és törlése. A beépített tétel törlése elrejti; frissítéskor sem jön vissza.
+- ~~Saját tétel felvétele, bármely tétel átnevezése és törlése. A beépített tétel törlése elrejti; frissítéskor sem jön vissza.~~ `❌ v0.3.0`
+- Saját tétel felvétele, átnevezése és törlése (visszavonással); *My items* szűrő. **A beépített tételek nem szerkeszthetők és nem törölhetők.** `🔄 v0.3.0`
 - A katalógusban a névkulcs egyedi.
 
 #### FR-11 Automatikus kiegészítés
@@ -171,7 +173,7 @@ Az app **offline** működik: nincs fiók, szerver és internet-engedély.
 #### FR-17 Fájlformátum
 - JSON, kiterjesztés `.cetli`, UTF-8.
 - Fejléc: `format: "cetli"`, `format_version` (egész, 1-gyel indul), `kind` (`list` vagy `backup`), `exported_at` (UTC), `app_version`.
-- Tartalom: listák (azonosító, név, időbélyegek) a tételeikkel (azonosító, név, megjegyzés, kipipálva, időbélyegek, törlésjel); mentésnél a saját és a módosított / elrejtett beépített katalógustételek is.
+- Tartalom: listák (azonosító, név, időbélyegek) a tételeikkel (azonosító, név, megjegyzés, kipipálva, időbélyegek, törlésjel); mentésnél a ~~saját és a módosított / elrejtett beépített~~ **saját** katalógustételek is `🔄 v0.3.0`.
 - Újabb **fő** formátumverziót a régi app nem tölt be, hanem frissítést kér ([[03 Fejlesztési folyamat#Verziószámozás]]).
 
 #### FR-18 Teljes mentés és visszatöltés
@@ -239,19 +241,20 @@ Minden azonosító UUID, minden időbélyeg UTC.
 | `list_id` | UUID (helyi lista) |
 | `foreign_id` | UUID (a fogadott lista azonosítója) |
 
-**CatalogItem**
+**CatalogItem** – csak a saját tételek (`catalog_items`, séma v2) `🔄 v0.3.0`
 
 | Mező | Típus | Megjegyzés |
 |---|---|---|
 | `id` | UUID | |
-| `name`, `name_key` | szöveg | a `name_key` egyedi |
-| `builtin` | logikai | beépített tétel |
+| `name`, `name_key` | szöveg | a `name_key` egyedi a nem törölt tételek között |
+| ~~`builtin`~~ | ~~logikai~~ | ~~beépített tétel~~ – a beépített tételek nincsenek az adatbázisban |
 | `created_at`, `updated_at` | időbélyeg | |
-| `deleted_at` | időbélyeg, opcionális | törölt / elrejtett |
+| `deleted_at` | időbélyeg, opcionális | törölt |
 
 **Settings:** `checked_position` (`bottom` \| `in_place`).
 
-A beépített katalógus az app része (asset). Első indításkor és frissítéskor a névkulcs szerint kerül az adatbázisba: új beépített tétel bekerül, az elrejtett nem jön vissza, a saját nem duplikálódik.
+~~A beépített katalógus az app része (asset). Első indításkor és frissítéskor a névkulcs szerint kerül az adatbázisba: új beépített tétel bekerül, az elrejtett nem jön vissza, a saját nem duplikálódik.~~ `❌ v0.3.0`
+A beépített katalógus az app része (`assets/catalog/builtin_items.txt`), az adatbázisba nem kerül; az app a saját tételekkel a memóriában egyesíti ([[ADR-007 Beépített katalógus az app részeként]]). `🔄 v0.3.0`
 
 ## 7. Képernyők (vázlat)
 

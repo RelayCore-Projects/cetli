@@ -46,7 +46,7 @@ Ha egy automatikus teszt elbukik, a GitHubon piros ❌ jelenik meg, és nem adun
 | T-13 | Gépelés: `br` | Legfeljebb 5 javaslat, a `Bread` elöl; koppintásra bekerül | FR-11 |
 | T-14 | *From catalog* → 3 tétel kijelölése → *Add (3)* | Mindhárom a listára kerül; a már ott lévők nem választhatók | FR-12 |
 | T-15 | Új név beírása (pl. `Tesco Jaffa Cakes`) | Megjelenik a katalógusban saját tételként | FR-13 |
-| T-16 | Katalógus: keresés, saját tétel felvétele, átnevezése, beépített tétel törlése | Működik; az elrejtett beépített tétel nem tér vissza újraindítás után | FR-10 |
+| T-16 | Katalógus: keresés, *My items*, saját tétel felvétele, átnevezése, törlése és visszavonása; beépített tételre koppintás `🔄 v0.3.0` | Működik; a beépített tétel nem szerkeszthető, nincs törlés gombja; már meglévő név nem vehető fel | FR-10 |
 | T-17 | *Share* → Messenger → a másik telefonon megnyitás a Cetlivel | Előnézet, majd összefésülés | FR-14, FR-15 |
 | T-18 | Ha T-17 nem nyitja meg: Letöltések → *Import* | Ugyanaz az eredmény | FR-15 |
 | T-19 | Két telefonon független lista (`Bread` / `bread`, közös és egyedi tételek, eltérő megjegyzés) → összefésülés mindkét irányban | Unió, duplikátum nélkül, a megjegyzések összefűzve; másodszori fogadás nem változtat semmit | FR-16 |

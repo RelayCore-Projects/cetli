@@ -7,9 +7,9 @@ frissitve: 2026-10-16
 
 # Katalógus – beépített tételek
 
-A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei (brit angol, mert a felület `en_GB`). Az appban **nincsenek kategóriák** (K-07: A–Z + keresés); a csoportosítás itt csak az átnézést segíti.
+A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei. Alapvetően brit angol (a felület `en_GB`), de ahol mi másképp mondjuk, a mi szóhasználatunk nyer (*Ground pork*, *Chips*, *Cookies*), mert az automatikus kiegészítés a begépelt szót keresi. A beépített tételek az appban **nem szerkeszthetők és nem törölhetők** ([[ADR-007 Beépített katalógus az app részeként]]). Az appban **nincsenek kategóriák** (K-07: A–Z + keresés); a csoportosítás itt csak az átnézést segíti.
 
-**Átnézés (kész, 2026-10-16):** a zsemle *Bread rolls* néven szerepel, mellé került a kifli (*Crescent rolls*). Későbbi módosításnál: amit nem kérsz, azt húzd át (`~~Tétel~~`), ami hiányzik, azt írd a csoport végére új sorba. A végleges listából készül az app fájlja (`assets/catalog/builtin_items.txt`). Később innen semmit nem törlünk, csak áthúzunk.
+**Átnézés (kész, 2026-10-16):** a zsemle *Bread rolls* néven szerepel, mellé került a kifli (*Crescent rolls*); *Minced* → *Ground*, *Crisps* → *Chips*, *Biscuits* → *Cookies*, *Oven chips* → *Frozen fries* (hogy a *Chips* egyértelmű legyen). Későbbi módosításnál: amit nem kérsz, azt húzd át (`~~Tétel~~`), ami hiányzik, azt írd a csoport végére új sorba. A végleges listából a `python3 tool/build_catalog.py` készíti el az app fájlját (`assets/catalog/builtin_items.txt`); az áthúzott sorok kimaradnak. Később innen semmit nem törlünk, csak áthúzunk.
 
 ## Pékáru
 - Bread
@@ -91,8 +91,8 @@ A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei (b
 - Chicken breast
 - Chicken thighs
 - Turkey breast
-- Minced pork
-- Minced beef
+- Ground pork
+- Ground beef
 - Pork chops
 - Bacon
 - Ham
@@ -137,8 +137,8 @@ A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei (b
 
 ## Nasi, édesség
 - Chocolate
-- Biscuits
-- Crisps
+- Cookies
+- Chips
 - Nuts
 - Popcorn
 - Ice cream
@@ -162,7 +162,7 @@ A [[01 Specifikáció#FR-10 Katalógus kezelése|FR-10]] beépített tételei (b
 - Frozen berries
 - Frozen pizza
 - Fish fingers
-- Oven chips
+- Frozen fries
 
 ## Háztartás
 - Toilet paper

@@ -10,6 +10,15 @@ Kategóriák: **Hozzáadva** · **Módosítva** · **Javítva** · **Eltávolít
 
 ## [Unreleased]
 
+### Hozzáadva
+- **Katalógus** 163 beépített tétellel (*Catalog* menüpont): keresés, saját tételek felvétele, átnevezése, törlése visszavonással, *My items* szűrő; a beépített tételek nem szerkeszthetők ([[ADR-007 Beépített katalógus az app részeként]])
+- **Automatikus kiegészítés** szerkesztő módban: gépelés közben legfeljebb 5 javaslat, koppintásra a listára kerül
+- **Választás a katalógusból** (*From catalog*): több tétel egyszerre, kereséssel; a listán lévők nem választhatók újra
+- A listára írt új nevek automatikusan bekerülnek a katalógusba
+
+### Módosítva
+- Adatbázis: 2-es séma (saját katalógustételek), automatikus migráció adatvesztés nélkül
+
 ## [0.2.0] – 2026-10-16 – Listák, szerkesztő és vásárló mód
 
 Az első telepíthető verzió.
