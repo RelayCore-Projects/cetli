@@ -1,5 +1,7 @@
+import 'package:cetli/data/catalog_repository.dart';
 import 'package:cetli/data/in_memory_list_repository.dart';
 import 'package:cetli/domain/sorting.dart';
+import 'package:cetli/state/catalog_store.dart';
 import 'package:cetli/state/list_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -203,5 +205,34 @@ void main() {
     await reloaded.load();
     expect(reloaded.lists.map((l) => l.name), ['Weekly']);
     expect(reloaded.itemsOf(list.id).map((i) => (i.name, i.note)), [('Milk', '2 l')]);
+  });
+
+  group('FR-12/13 with the catalog', () {
+    late CatalogStore catalog;
+    late String listId;
+    setUp(() async {
+      catalog = CatalogStore(InMemoryCatalogRepository(), builtinNames: ['Milk', 'Bread']);
+      store = ListStore(repo, catalog: catalog, clock: steppingClock(), newId: sequentialIds());
+      listId = (await store.createList('Weekly')).id;
+    });
+
+    test('a new name put on a list is learned, a known one is not duplicated', () async {
+      await store.addItem(listId, 'Tesco Jaffa Cakes');
+      await store.addItem(listId, 'milk');
+      expect(catalog.findByName('tesco jaffa cakes')!.builtin, isFalse);
+      expect(catalog.items, hasLength(3));
+    });
+
+    test('renaming an item teaches the new name', () async {
+      final item = (await store.addItem(listId, 'Milk')).item;
+      await store.updateItem(item.id, name: 'Goat milk');
+      expect(catalog.findByName('Goat milk'), isNotNull);
+    });
+
+    test('addItems adds the new names and counts them', () async {
+      await store.addItem(listId, 'Milk');
+      expect(await store.addItems(listId, ['Bread', 'milk', 'Eggs']), 2);
+      expect(namesOf(listId), ['Milk', 'Bread', 'Eggs']);
+    });
   });
 }

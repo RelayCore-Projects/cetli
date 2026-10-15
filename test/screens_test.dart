@@ -1,7 +1,9 @@
 import 'package:cetli/app.dart';
+import 'package:cetli/data/catalog_repository.dart';
 import 'package:cetli/data/in_memory_list_repository.dart';
 import 'package:cetli/domain/settings.dart';
 import 'package:cetli/domain/sorting.dart';
+import 'package:cetli/state/catalog_store.dart';
 import 'package:cetli/state/list_store.dart';
 import 'package:cetli/state/settings_store.dart';
 import 'package:flutter/material.dart';
@@ -14,22 +16,31 @@ Future<ListStore> _pump(
   WidgetTester tester, {
   ListStore? store,
   AppSettings settings = const AppSettings(),
+  CatalogStore? catalog,
 }) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
   final s = store ?? _newStore();
   await tester.pumpWidget(
-    CetliApp(store: s, settings: SettingsStore.inMemory(settings)),
+    CetliApp(store: s, settings: SettingsStore.inMemory(settings), catalog: catalog),
   );
   await tester.pumpAndSettle();
   return s;
 }
 
-ListStore _newStore() => ListStore(
+ListStore _newStore({CatalogStore? catalog}) => ListStore(
       InMemoryListRepository(),
+      catalog: catalog,
       clock: steppingClock(),
       newId: sequentialIds(),
+    );
+
+CatalogStore _catalog() => CatalogStore(
+      InMemoryCatalogRepository(),
+      builtinNames: const ['Bread', 'Bread rolls', 'Breadcrumbs', 'Milk', 'Eggs'],
+      clock: steppingClock(),
+      newId: sequentialIds('c'),
     );
 
 /// A store with one list "Weekly": Bread, Milk, Apples (in this order).
@@ -374,6 +385,127 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('selection-count')), findsNothing);
       expect(find.text('Weekly'), findsOneWidget);
+    });
+  });
+
+  group('catalog (v0.3.0)', () {
+    /// An empty list "Weekly" opened in edit mode, with the catalog wired in.
+    Future<(ListStore, CatalogStore, String)> editWeekly(WidgetTester tester,
+        {List<String> items = const []}) async {
+      final catalog = _catalog();
+      final store = _newStore(catalog: catalog);
+      final list = await store.createList('Weekly');
+      for (final n in items) {
+        await store.addItem(list.id, n);
+      }
+      await _pump(tester, store: store, catalog: catalog);
+      await _openList(tester, 'Weekly');
+      await tester.tap(find.byKey(const Key('edit')));
+      await tester.pumpAndSettle();
+      return (store, catalog, list.id);
+    }
+
+    testWidgets('FR-11: suggestions while typing; a tap adds the item', (tester) async {
+      final (store, _, listId) = await editWeekly(tester);
+      await tester.enterText(find.byKey(const Key('add-item-field')), 'br');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('suggestion-bread')), findsOneWidget);
+      expect(find.byKey(const Key('suggestion-bread rolls')), findsOneWidget);
+      expect(find.byKey(const Key('suggestion-milk')), findsNothing);
+
+      await tester.tap(find.byKey(const Key('suggestion-bread rolls')));
+      await tester.pumpAndSettle();
+      expect(store.itemsOf(listId).map((i) => i.name), ['Bread rolls']);
+      expect(find.byKey(const Key('suggestions')), findsNothing); // the field is empty
+      expect(_inputFocused(tester), isTrue);
+
+      await tester.enterText(find.byKey(const Key('add-item-field')), 'BR');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('suggestion-bread rolls')), findsNothing); // on the list
+      expect(find.byKey(const Key('suggestion-bread')), findsOneWidget);
+    });
+
+    testWidgets('FR-12: several items from the catalog', (tester) async {
+      final (store, _, listId) = await editWeekly(tester, items: ['Milk']);
+      await tester.tap(find.byKey(const Key('from-catalog')));
+      await tester.pumpAndSettle();
+
+      final milk = tester.widget<CheckboxListTile>(find.byKey(const Key('pick-milk')));
+      expect(milk.value, isTrue);
+      expect(milk.onChanged, isNull); // already on the list
+
+      await tester.tap(find.byKey(const Key('pick-eggs')));
+      await tester.enterText(find.byKey(const Key('picker-search')), 'roll');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('pick-eggs')), findsNothing);
+      await tester.tap(find.byKey(const Key('pick-bread rolls')));
+      await tester.pumpAndSettle();
+      expect(find.text('Add (2)'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('add-selected')));
+      await tester.pumpAndSettle();
+      expect(store.itemsOf(listId).map((i) => i.name),
+          unorderedEquals(['Milk', 'Eggs', 'Bread rolls']));
+      expect(find.text('2 items added'), findsOneWidget);
+    });
+
+    testWidgets('FR-13: a new name typed on a list is learned', (tester) async {
+      final (_, catalog, _) = await editWeekly(tester);
+      await _type(tester, 'Tesco Jaffa Cakes');
+      expect(catalog.findByName('tesco jaffa cakes')?.builtin, isFalse);
+    });
+
+    testWidgets('FR-10: catalog screen – built-in read-only, own items editable',
+        (tester) async {
+      final catalog = _catalog();
+      await _pump(tester, store: _newStore(catalog: catalog), catalog: catalog);
+      await _menu(tester, 'home-menu', 'Catalog');
+      expect(find.text('Bread'), findsOneWidget);
+      expect(find.byKey(const Key('catalog-delete-bread')), findsNothing);
+
+      // add an own item; a name already in the catalog is refused
+      await tester.tap(find.byKey(const Key('add-catalog-item')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('name-field')), 'Kefir');
+      await tester.tap(find.byKey(const Key('name-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('catalog-kefir')), findsOneWidget);
+      expect(find.text('My item'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('add-catalog-item')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('name-field')), 'bread');
+      await tester.tap(find.byKey(const Key('name-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.text('"bread" is already in the catalog'), findsOneWidget);
+
+      // rename
+      await tester.tap(find.text('Kefir'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('name-field')), 'Plain kefir');
+      await tester.tap(find.byKey(const Key('name-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.text('Plain kefir'), findsOneWidget);
+
+      // only my items
+      await tester.tap(find.byKey(const Key('only-mine')));
+      await tester.pumpAndSettle();
+      expect(find.text('Bread'), findsNothing);
+      expect(find.text('Plain kefir'), findsOneWidget);
+
+      // delete and undo
+      await tester.tap(find.byKey(const Key('catalog-delete-plain kefir')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('catalog-plain kefir')), findsNothing);
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('catalog-plain kefir')), findsOneWidget);
+
+      // search
+      await tester.tap(find.byKey(const Key('only-mine')));
+      await tester.enterText(find.byKey(const Key('catalog-search')), 'brea');
+      await tester.pumpAndSettle();
+      expect(find.text('3 items'), findsOneWidget);
     });
   });
 }
