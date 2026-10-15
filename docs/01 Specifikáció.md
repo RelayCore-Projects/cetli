@@ -1,8 +1,8 @@
 ---
 tipus: specifikacio
-dokumentum_verzio: 0.1.0
-statusz: koncepció – jóváhagyásra vár
-frissitve: 2026-10-15
+dokumentum_verzio: 0.2.0
+statusz: fejlesztés
+frissitve: 2026-10-16
 ---
 
 # Cetli – Specifikáció
@@ -12,6 +12,8 @@ frissitve: 2026-10-15
 | Verzió | Dátum | Változás | Indok / forrás |
 |---|---|---|---|
 | 0.1.0 | 2026-10-15 | Első változat (koncepció); a K-01…K-07 kérdések lezárva | Kiinduló igények, lásd [[#1. Cél]] és [[#9. Nyitott kérdések]] |
+| 0.2.0 | 2026-10-16 | FR-05: a duplikátum üzenete a beviteli mező alatt jelenik meg | A 0.2.0 első CI-köre: a felugró üzenet eltakarta a beviteli mezőt |
+| 0.2.0 | 2026-10-16 | **Új: FR-20** – listák kijelölése hosszú nyomással, több lista törlése egyszerre, átnevezés a kijelölésből | Igény a 0.2.0 Preview kipróbálása után: több lista egyszerre törölhető legyen |
 
 > [!info] Hogyan jelöljük a változásokat ebben a dokumentumban
 > - Minden módosítás új sort kap a fenti táblázatban (verzió, dátum, mi, miért).
@@ -69,7 +71,7 @@ Az app **offline** működik: nincs fiók, szerver és internet-engedély.
 #### FR-01 Listák áttekintése (főképernyő)
 - A főképernyő a listák felsorolása, a legutóbb módosított van felül.
 - Soronként: a lista neve és az állapota, például `5 / 12` (kipipálva / összes).
-- Koppintás: a lista megnyílik **vásárló módban** (FR-04).
+- Koppintás: a lista megnyílik **vásárló módban** (FR-04). Hosszú nyomás: kijelölés (FR-20) `🆕 v0.2.0`
 - `+` gomb: új lista (FR-02).
 - Menü: *Catalog* (FR-10), *Import* (FR-15), *Settings* (FR-18).
 - Üres állapot: rövid útmutatás („No lists yet. Tap + to create one.”).
@@ -94,7 +96,7 @@ Az app **offline** működik: nincs fiók, szerver és internet-engedély.
 
 #### FR-05 Duplikátum kézi bevitelnél
 - Ha a beírt név névkulcsa már szerepel a listán, **nem jön létre új tétel**:
-  - ha a meglévő nincs kipipálva: rövid üzenet („Already on the list”), és a tétel kiemelődik;
+  - ha a meglévő nincs kipipálva: rövid üzenet („Already on the list”) a beviteli mező alatt `🔄 v0.2.0`, és a tétel kiemelődik;
   - ha a meglévő ki van pipálva: a pipa lekerül róla (újra kell venni).
 - A törölt tétel nem számít duplikátumnak.
 
@@ -181,6 +183,13 @@ Az app **offline** működik: nincs fiók, szerver és internet-engedély.
 #### FR-19 Beállítások és névjegy
 - *Settings*: a kipipált tételek helye (FR-08), mentés és visszatöltés (FR-18), *About*.
 - *About*: verziószám, licenc (MIT), a repó címe, „Your data stays on this device”.
+
+#### FR-20 Listák kijelölése `🆕 v0.2.0`
+- A főképernyőn egy listát **hosszan megnyomva** kijelölő mód indul; ebben a módban koppintásra további listák jelölhetők ki vagy vehetők ki.
+- A felső sáv: ✕ (kilépés), „n selected”, *Select all*, *Rename* (csak pontosan egy kijelölt listánál), *Delete*.
+- Törlés megerősítéssel (pl. „Delete 2 lists?”); logikai törlés.
+- A vissza gomb előbb a kijelölést szünteti meg.
+- A lista saját menüjében az átnevezés és a törlés továbbra is megvan (FR-02).
 
 ## 5. Nem funkcionális követelmények
 

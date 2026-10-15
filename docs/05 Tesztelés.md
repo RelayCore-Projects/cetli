@@ -57,6 +57,7 @@ Ha egy automatikus teszt elbukik, a GitHubon piros ❌ jelenik meg, és nem adun
 | T-24 | Frissítés az előző kiadott verzióról | Az adatok megmaradnak | NFR-05 |
 | T-25 | Sötét téma a telefonon | A felület sötét, a kipipált tételek is olvashatók | NFR-06, NFR-07 |
 | T-26 | *About* | Verzió, licenc, repó címe | FR-19 |
+| T-27 | Főképernyő: hosszú nyomás egy listán → koppintás egy másikon → *Delete* → megerősítés; egy kijelölt listánál *Rename*; vissza gomb kijelölés közben | Mindkét lista törlődik; az átnevezés működik; a vissza gomb csak a kijelölést szünteti meg | FR-20 |
 
 ## Tesztkörök
 
