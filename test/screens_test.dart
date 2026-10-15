@@ -295,4 +295,85 @@ void main() {
     await _pump(tester, store: store);
     expect(find.text('1 / 3'), findsOneWidget);
   });
+
+  group('FR-20: selecting lists on the home screen', () {
+    Future<ListStore> threeLists(WidgetTester tester) async {
+      final store = _newStore();
+      for (final n in ['Weekly', 'Party', 'DIY']) {
+        await store.createList(n);
+      }
+      return _pump(tester, store: store);
+    }
+
+    String count(WidgetTester tester) =>
+        tester.widget<Text>(find.byKey(const Key('selection-count'))).data!;
+
+    testWidgets('a long press selects, taps add more, delete removes them',
+        (tester) async {
+      final store = await threeLists(tester);
+      await tester.longPress(find.text('Weekly'));
+      await tester.pumpAndSettle();
+      expect(count(tester), '1 selected');
+      expect(find.byKey(const Key('rename-selected')), findsOneWidget);
+      expect(find.byKey(const Key('new-list')), findsNothing);
+
+      await tester.tap(find.text('Party'));
+      await tester.pumpAndSettle();
+      expect(count(tester), '2 selected');
+      expect(find.byKey(const Key('rename-selected')), findsNothing);
+
+      await tester.tap(find.byKey(const Key('delete-selected')));
+      await tester.pumpAndSettle();
+      expect(find.text('Delete 2 lists?'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('confirm')));
+      await tester.pumpAndSettle();
+
+      expect(store.lists.map((l) => l.name), ['DIY']);
+      expect(find.byKey(const Key('selection-count')), findsNothing);
+      expect(find.byKey(const Key('new-list')), findsOneWidget);
+    });
+
+    testWidgets('rename a single selected list', (tester) async {
+      final store = await threeLists(tester);
+      await tester.longPress(find.text('Party'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('rename-selected')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('name-field')), 'Birthday');
+      await tester.tap(find.byKey(const Key('name-confirm')));
+      await tester.pumpAndSettle();
+      expect(find.text('Birthday'), findsOneWidget);
+      expect(store.lists.map((l) => l.name), contains('Birthday'));
+      expect(find.byKey(const Key('selection-count')), findsNothing);
+    });
+
+    testWidgets('select all, cancel, and a tap outside selection mode opens the list',
+        (tester) async {
+      await threeLists(tester);
+      await tester.longPress(find.text('DIY'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('select-all')));
+      await tester.pumpAndSettle();
+      expect(count(tester), '3 selected');
+      expect(find.byKey(const Key('select-all')), findsNothing);
+
+      await tester.tap(find.byKey(const Key('clear-selection')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('selection-count')), findsNothing);
+
+      await tester.tap(find.text('DIY'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('list-status')), findsOneWidget);
+    });
+
+    testWidgets('the back button leaves selection mode first', (tester) async {
+      await threeLists(tester);
+      await tester.longPress(find.text('Weekly'));
+      await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('selection-count')), findsNothing);
+      expect(find.text('Weekly'), findsOneWidget);
+    });
+  });
 }

@@ -36,6 +36,18 @@ void main() {
       expect(repo.listRows[list.id]!.isDeleted, isTrue);
     });
 
+    test('several lists can be deleted at once (FR-20)', () async {
+      final a = await store.createList('A');
+      final b = await store.createList('B');
+      final c = await store.createList('C');
+      await store.addItem(b.id, 'Milk');
+      await store.deleteLists([a.id, b.id]);
+      expect(store.lists.map((l) => l.id), [c.id]);
+      expect(store.itemsOf(b.id), isEmpty);
+      expect(repo.listRows[a.id]!.isDeleted, isTrue);
+      expect(repo.listRows[b.id]!.isDeleted, isTrue);
+    });
+
     test('an empty name is rejected', () async {
       await expectLater(store.createList('   '), throwsArgumentError);
     });

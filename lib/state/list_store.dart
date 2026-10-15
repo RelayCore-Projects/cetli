@@ -105,12 +105,16 @@ class ListStore extends ChangeNotifier {
   }
 
   /// Soft delete; the items stay untouched in the database.
-  Future<void> deleteList(String listId) async {
+  Future<void> deleteList(String listId) => deleteLists([listId]);
+
+  /// FR-20: deletes several lists at once (soft delete).
+  Future<void> deleteLists(Iterable<String> listIds) async {
     final now = _now();
-    await _repository
-        .updateList(_list(listId).copyWith(deletedAt: now, updatedAt: now));
-    _lists.remove(listId);
-    _items.remove(listId);
+    for (final id in listIds.toList()) {
+      await _repository.updateList(_list(id).copyWith(deletedAt: now, updatedAt: now));
+      _lists.remove(id);
+      _items.remove(id);
+    }
     notifyListeners();
   }
 
