@@ -1,6 +1,6 @@
 ---
 tipus: otletek
-frissitve: 2026-10-15
+frissitve: 2026-10-16
 ---
 
 # Ötletek
@@ -25,3 +25,5 @@ Hosszabb ötlethez külön jegyzet: `Ctrl+P` → *Templates: Insert template* �
 | Ö-010 | 2026-10-15 | Megjelenés áruházban (Google Play vagy F-Droid); addig frissítés **Obtainium**-mal a GitHub Releases-ből | 💭 | v1.0 után |
 | Ö-011 | 2026-10-15 | Listák archiválása és visszahozása | 💭 | K-04: a v1.0-ban kézi műveletek (FR-09) |
 | Ö-012 | 2026-10-15 | Gyors bevitel szintaxissal, pl. `Milk, 2 l` → név + megjegyzés | 💭 | |
+| Ö-014 | 2026-10-16 | Tételek kijelölése hosszú nyomással szerkesztő módban (több tétel törlése egyszerre) | 💭 | most: tételenkénti ✕ és *Remove checked items*; ha hiányzik |
+| Ö-013 | 2026-10-16 | CI: a GitHub Actions lépések frissítése új főverzióra (Node 24) | 💭 | technikai; most figyelmeztetést ad, de működik |

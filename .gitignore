@@ -9,6 +9,9 @@ backups/
 # Personal notes (local only)
 docs/_privat/
 
+# Files the Claude desktop app saves into the folder
+Claude outputs/
+
 # ---------- Signing keys and secrets ----------
 *.jks
 *.keystore
